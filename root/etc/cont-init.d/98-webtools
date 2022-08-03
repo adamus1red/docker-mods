@@ -1,0 +1,19 @@
+#!/usr/bin/with-contenv bash 
+
+# install git if needed
+if [ -z `command -v git` ]; then
+    echo "**** installing git ****"
+    apt-get install --no-install-recommends -y git
+fi
+
+plugindir="/config/Library/Application Support/Plex Media Server/Plug-ins"
+
+# clone or update WebTools.bundle repo
+if [ ! -d "$plugindir/WebTools.bundle" ]; then
+    echo "**** no agent found, cloning ****"
+    s6-setuidgid abc git clone --depth 1 https://github.com/ukdtom/WebTools.bundle.git "$plugindir/WebTools.bundle"
+else
+    echo "**** pulling latest update ****"
+    s6-setuidgid abc git -C "$plugindir/WebTools.bundle" pull
+fi
+chown -R abc:abc "$plugindir/WebTools.bundle"
